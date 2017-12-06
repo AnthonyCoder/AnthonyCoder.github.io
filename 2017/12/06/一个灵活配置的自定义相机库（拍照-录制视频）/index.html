@@ -94,16 +94,17 @@
 
 
 
-<meta name="description" content="来自Anthony的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Anthony的个人博客">
-<meta property="og:url" content="http://androidcoder.wang/index.html">
+<meta name="description" content="1.前言 1.1 初衷在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。  1.2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个灵活配置的自定义相机库（拍照+录制视频）">
+<meta property="og:url" content="http://androidcoder.wang/2017/12/06/一个灵活配置的自定义相机库（拍照-录制视频）/index.html">
 <meta property="og:site_name" content="Anthony的个人博客">
-<meta property="og:description" content="来自Anthony的博客">
+<meta property="og:description" content="1.前言 1.1 初衷在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。  1.2">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-12-06T08:22:16.580Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Anthony的个人博客">
-<meta name="twitter:description" content="来自Anthony的博客">
+<meta name="twitter:title" content="一个灵活配置的自定义相机库（拍照+录制视频）">
+<meta name="twitter:description" content="1.前言 1.1 初衷在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。  1.2">
 
 
 
@@ -132,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://androidcoder.wang/"/>
+  <link rel="canonical" href="http://androidcoder.wang/2017/12/06/一个灵活配置的自定义相机库（拍照-录制视频）/"/>
 
 
 
 
 
-  <title>Anthony的个人博客</title>
+  <title>一个灵活配置的自定义相机库（拍照+录制视频） | Anthony的个人博客</title>
   
 
 
@@ -157,9 +158,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -242,9 +241,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -274,9 +273,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/06/一个灵活配置的自定义相机库（拍照-录制视频）/" itemprop="url">一个灵活配置的自定义相机库（拍照+录制视频）</a></h1>
+          <h1 class="post-title" itemprop="name headline">一个灵活配置的自定义相机库（拍照+录制视频）</h1>
         
 
         <div class="post-meta">
@@ -326,9 +323,7 @@
       
 
       
-        
-          
-            <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><ul>
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><ul>
 <li><h4 id="1-1-初衷"><a href="#1-1-初衷" class="headerlink" title="1.1 初衷"></a>1.1 初衷</h4><p>在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。</p>
 </li>
 <li><h4 id="1-2-简单介绍"><a href="#1-2-简单介绍" class="headerlink" title="1.2 简单介绍"></a>1.2 简单介绍</h4><p>该开源项目整体由Builder模式编写，方便后期扩展，支持链式调用。</p>
@@ -376,8 +371,6 @@
 </li>
 </ul>
 
-          
-        
       
     </div>
     
@@ -394,132 +387,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://androidcoder.wang/2017/08/23/如何使用Hexo搭建个人博客/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="AnthonyCoder">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anthony的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/23/如何使用Hexo搭建个人博客/" itemprop="url">如何使用Hexo搭建个人博客</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-23T11:55:02+08:00">
-                2017-08-23
-              </time>
+              <a href="/2017/08/23/如何使用Hexo搭建个人博客/" rel="next" title="如何使用Hexo搭建个人博客">
+                <i class="fa fa-chevron-left"></i> 如何使用Hexo搭建个人博客
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>你好，再见<br>嘿嘿哈哈</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -529,258 +418,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://androidcoder.wang/2017/08/16/我的第一篇Blog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="AnthonyCoder">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anthony的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/16/我的第一篇Blog/" itemprop="url">我的第一篇Blog</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-16T20:21:48+08:00">
-                2017-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我的第一篇博客</p>
-
-          
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://androidcoder.wang/2017/08/16/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="AnthonyCoder">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anthony的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/16/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-16T20:17:36+08:00">
-                2017-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -788,6 +430,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -808,8 +454,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -853,6 +508,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-初衷"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.1 初衷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-简单介绍"><span class="nav-number">1.0.2.</span> <span class="nav-text">1.2 简单介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-开源地址："><span class="nav-number">1.0.3.</span> <span class="nav-text">1.3 开源地址：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-准备"><span class="nav-number">2.</span> <span class="nav-text">2.准备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-了解SurfaceView"><span class="nav-number">2.0.1.</span> <span class="nav-text">2.1 了解SurfaceView</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-1-简介"><span class="nav-number">2.0.1.0.1.</span> <span class="nav-text">2.1.1 简介</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1-2-SurfaceView类-和View类的区别"><span class="nav-number">2.0.1.0.2.</span> <span class="nav-text">2.1.2 SurfaceView类 和View类的区别:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2理解Builder模式"><span class="nav-number">2.0.2.</span> <span class="nav-text">2.2理解Builder模式</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-2-1-优缺点："><span class="nav-number">2.0.2.0.1.</span> <span class="nav-text">2.2.1 优缺点：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-编码"><span class="nav-number">3.</span> <span class="nav-text">3.编码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-自定义SurfaceView的实现和设计"><span class="nav-number">3.0.1.</span> <span class="nav-text">3.1  自定义SurfaceView的实现和设计</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-1-1-自定义SurfaceView实现"><span class="nav-number">3.0.1.0.1.</span> <span class="nav-text">3.1.1 自定义SurfaceView实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-辅助类的编写思路"><span class="nav-number">3.0.2.</span> <span class="nav-text">3.2  辅助类的编写思路</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-1-编写前的思考"><span class="nav-number">3.0.2.0.1.</span> <span class="nav-text">3.2.1 编写前的思考</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-2-处理异常"><span class="nav-number">3.0.2.0.2.</span> <span class="nav-text">3.2.2 处理异常</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-运行时权限的处理"><span class="nav-number">3.0.3.</span> <span class="nav-text">3.3   运行时权限的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-3-1-PermissionsDispatcher介绍"><span class="nav-number">3.0.3.0.1.</span> <span class="nav-text">3.3.1 PermissionsDispatcher介绍</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-遇到的问题"><span class="nav-number">4.</span> <span class="nav-text">4.遇到的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-结语"><span class="nav-number">5.</span> <span class="nav-text">5.结语</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-该自定义库优点"><span class="nav-number">5.0.1.</span> <span class="nav-text">5.1 该自定义库优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-参考"><span class="nav-number">5.0.2.</span> <span class="nav-text">5.2 参考</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -976,10 +647,10 @@
   
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
 
-  
+
 
   
 
