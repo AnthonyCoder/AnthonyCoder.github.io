@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="android, 小程序, python, java, 程序员, hacker" />
+  <meta name="keywords" content="android,组件," />
 
 
 
@@ -87,7 +87,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2" />
 
 
 
@@ -95,7 +95,7 @@
 
 
 <meta name="description" content="前言 该片文章所讲的Dialog适用于那种漂亮可爱妹纸设计的多种弹框，各种弹，各种动画，各种方位、姿势和变化。 写该文章的初衷在于刚好我们公司就有这么一对可爱的设计师，这样多样式的弹框，如果一个个单独写会造成代码臃肿和可读性十分差，所以做了一下二次封装。 本文章其实早在两个月前就打算写了，由于项目时间十分紧张（通宵加班加得我怀疑猿生），所以拖到了现在，终于开始写了（我在调休,嘿嘿嘿…）。 本文会用">
-<meta name="keywords" content="android blog, 小程序, python blog, java blog&quot;">
+<meta name="keywords" content="android,组件">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何从0构造出一个万能的Dialog">
 <meta property="og:url" content="http://androidcoder.wang/2017/12/07/如何从0构造出一个万能的Dialog/index.html">
@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2200042-cece04f9d376a6b1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2200042-17ec98acc1004a15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2200042-c417163d616171b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-12-07T10:09:28.574Z">
+<meta property="og:updated_time" content="2017-12-13T02:38:28.525Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何从0构造出一个万能的Dialog">
 <meta name="twitter:description" content="前言 该片文章所讲的Dialog适用于那种漂亮可爱妹纸设计的多种弹框，各种弹，各种动画，各种方位、姿势和变化。 写该文章的初衷在于刚好我们公司就有这么一对可爱的设计师，这样多样式的弹框，如果一个个单独写会造成代码臃肿和可读性十分差，所以做了一下二次封装。 本文章其实早在两个月前就打算写了，由于项目时间十分紧张（通宵加班加得我怀疑猿生），所以拖到了现在，终于开始写了（我在调休,嘿嘿嘿…）。 本文会用">
@@ -214,6 +214,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -230,6 +240,26 @@
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-welfare">
+          <a href="/welfare/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-diamond"></i> <br />
+            
+            福利
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
           </a>
         </li>
       
@@ -697,10 +727,47 @@ public View getDialogView() {
     
 
     
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="AnthonyCoder WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="AnthonyCoder Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
 
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/组件/" rel="tag"># 组件</a>
+          
+        </div>
       
 
       
@@ -804,6 +871,15 @@ public View getDialogView() {
 
           
 
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
           
 
         </nav>

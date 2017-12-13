@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="android, 小程序, python, java, 程序员, hacker" />
+  <meta name="keywords" content="android,工具," />
 
 
 
@@ -87,7 +87,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2" />
 
 
 
@@ -95,14 +95,14 @@
 
 
 <meta name="description" content="1.前言 1.1 初衷在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。  1.2">
-<meta name="keywords" content="android blog, 小程序, python blog, java blog&quot;">
+<meta name="keywords" content="android,工具">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一个灵活配置的自定义相机库（拍照+录制视频）">
 <meta property="og:url" content="http://androidcoder.wang/2017/12/06/一个灵活配置的自定义相机库（拍照-录制视频）/index.html">
 <meta property="og:site_name" content="Anthony的个人博客">
 <meta property="og:description" content="1.前言 1.1 初衷在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。  1.2">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-07T09:57:20.257Z">
+<meta property="og:updated_time" content="2017-12-13T02:40:27.791Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个灵活配置的自定义相机库（拍照+录制视频）">
 <meta name="twitter:description" content="1.前言 1.1 初衷在我们做很多项目的过程中，经常会遇到很多需要自定义的相机的需求，这个时候，很多人第一步都是网上查资料，包括我也是这样，但是我没有发现有比较靠谱没有Bug的开源项目，虽然这个需求也不是很难，但是由于android市场的碎片化，各机型的适配也是很头疼，一步一步去写难免会踩到不少的坑，所以，我打算长期维护这个项目，有问题的欢迎提交Issues，以便于我完善这个开源项目。  1.2">
@@ -205,6 +205,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -221,6 +231,26 @@
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-welfare">
+          <a href="/welfare/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-diamond"></i> <br />
+            
+            福利
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
           </a>
         </li>
       
@@ -392,10 +422,47 @@
     
 
     
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="AnthonyCoder WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="AnthonyCoder Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
 
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/工具/" rel="tag"># 工具</a>
+          
+        </div>
       
 
       
@@ -499,6 +566,15 @@
 
           
 
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
           
 
         </nav>
