@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2200042-cece04f9d376a6b1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2200042-17ec98acc1004a15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2200042-c417163d616171b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-12-13T02:38:28.525Z">
+<meta property="og:updated_time" content="2017-12-13T04:09:49.413Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何从0构造出一个万能的Dialog">
 <meta name="twitter:description" content="前言 该片文章所讲的Dialog适用于那种漂亮可爱妹纸设计的多种弹框，各种弹，各种动画，各种方位、姿势和变化。 写该文章的初衷在于刚好我们公司就有这么一对可爱的设计师，这样多样式的弹框，如果一个个单独写会造成代码臃肿和可读性十分差，所以做了一下二次封装。 本文章其实早在两个月前就打算写了，由于项目时间十分紧张（通宵加班加得我怀疑猿生），所以拖到了现在，终于开始写了（我在调休,嘿嘿嘿…）。 本文会用">
@@ -184,7 +184,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">一个不羁的码农~</p>
+        <h1 class="site-subtitle" itemprop="description">世界太嘈杂，只想敲代码~</h1>
       
   </div>
 
@@ -299,7 +299,7 @@
     <link itemprop="mainEntityOfPage" href="http://androidcoder.wang/2017/12/07/如何从0构造出一个万能的Dialog/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="AnthonyCoder">
+      <meta itemprop="name" content="Anthony">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
@@ -313,7 +313,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何从0构造出一个万能的Dialog</h1>
+          <h2 class="post-title" itemprop="name headline">如何从0构造出一个万能的Dialog</h2>
         
 
         <div class="post-meta">
@@ -335,6 +335,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -730,22 +752,22 @@ public View getDialogView() {
       <div>
         <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
   <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>Donate</span>
+  <button id="rewardButton" style="margin:20px auto" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
   </button>
   <div id="QR" style="display: none;">
 
     
       <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="AnthonyCoder WeChat Pay"/>
-        <p>WeChat Pay</p>
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="Anthony WeChat Pay"/>
+        <p>微信打赏</p>
       </div>
     
 
     
       <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.jpg" alt="AnthonyCoder Alipay"/>
-        <p>Alipay</p>
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Anthony Alipay"/>
+        <p>支付宝打赏</p>
       </div>
     
 
@@ -753,6 +775,8 @@ public View getDialogView() {
 
   </div>
 </div>
+
+
 
       </div>
     
@@ -788,6 +812,10 @@ public View getDialogView() {
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/12/13/号称十万元的设计教程/" rel="prev" title="号称十万元的设计教程">
+                号称十万元的设计教程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -816,7 +844,11 @@ public View getDialogView() {
           
   <div class="comments" id="comments">
     
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMjM2My84OTI0"></div>
+    
   </div>
+
+
 
 
         </div>
@@ -852,23 +884,32 @@ public View getDialogView() {
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpg"
-               alt="AnthonyCoder" />
-          <p class="site-author-name" itemprop="name">AnthonyCoder</p>
+               alt="Anthony" />
+          <p class="site-author-name" itemprop="name">Anthony</p>
            
-              <p class="site-description motion-element" itemprop="description">来自Anthony的博客</p>
-          
+              <p class="site-description motion-element" itemprop="description"></p>
+           
         </div>
         <nav class="site-state motion-element">
 
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
           
 
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
           
 
           
@@ -876,7 +917,7 @@ public View getDialogView() {
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -984,7 +1025,7 @@ public View getDialogView() {
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">AnthonyCoder</span>
+  <span class="author" itemprop="copyrightHolder">Anthony</span>
 
   
 </div>
@@ -1082,6 +1123,9 @@ public View getDialogView() {
 
 
 
+
+
+
   
   
 
@@ -1119,12 +1163,25 @@ public View getDialogView() {
 
 
 
+###   
+
+
+
+
+
+
+
   
-
-
-
-
-
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
   
 
 
