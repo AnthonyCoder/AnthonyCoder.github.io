@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="面试," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="题一：为什么在主线程的 Looper.looper() 死循环不会卡死？从 ActivityThread 源码开始分析Activity 启动一般会调用到 ActivityThread，里面有 main 方法，是初始 activity 必经阶段。我们的 Looper 就是在这个 main 方法内创建的。1234567891011121314151617181920212223242526272829">
+<meta name="keywords" content="面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android面试杂谈一">
+<meta property="og:url" content="http://androidcoder.wang/2018/06/27/Android面试杂谈一/index.html">
+<meta property="og:site_name" content="Anthony的个人博客">
+<meta property="og:description" content="题一：为什么在主线程的 Looper.looper() 死循环不会卡死？从 ActivityThread 源码开始分析Activity 启动一般会调用到 ActivityThread，里面有 main 方法，是初始 activity 必经阶段。我们的 Looper 就是在这个 main 方法内创建的。1234567891011121314151617181920212223242526272829">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-03T06:41:07.379Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android面试杂谈一">
+<meta name="twitter:description" content="题一：为什么在主线程的 Looper.looper() 死循环不会卡死？从 ActivityThread 源码开始分析Activity 启动一般会调用到 ActivityThread，里面有 main 方法，是初始 activity 必经阶段。我们的 Looper 就是在这个 main 方法内创建的。1234567891011121314151617181920212223242526272829">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://androidcoder.wang/2018/06/27/Android面试杂谈一/"/>
+
+
+
+
+
+  <title>Android面试杂谈一 | Anthony的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Anthony的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">世界太嘈杂，只想敲代码~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-welfare">
+          <a href="/welfare/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-diamond"></i> <br />
+            
+            福利
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://androidcoder.wang/2018/06/27/Android面试杂谈一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AnthonyCoder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anthony的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android面试杂谈一</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-27T11:03:30+08:00">
+                2018-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android面试题/" itemprop="url" rel="index">
+                    <span itemprop="name">Android面试题</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/06/27/Android面试杂谈一/" class="leancloud_visitors" data-flag-title="Android面试杂谈一">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="题一：为什么在主线程的-Looper-looper-死循环不会卡死？"><a href="#题一：为什么在主线程的-Looper-looper-死循环不会卡死？" class="headerlink" title="题一：为什么在主线程的 Looper.looper() 死循环不会卡死？"></a>题一：为什么在主线程的 Looper.looper() 死循环不会卡死？</h3><h4 id="从-ActivityThread-源码开始分析"><a href="#从-ActivityThread-源码开始分析" class="headerlink" title="从 ActivityThread 源码开始分析"></a>从 ActivityThread 源码开始分析</h4><p>Activity 启动一般会调用到 ActivityThread，里面有 main 方法，是初始 activity 必经阶段。我们的 Looper 就是在这个 main 方法内创建的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"ActivityThreadMain"</span>);</div><div class="line">        SamplingProfilerIntegration.start();</div><div class="line"></div><div class="line">        <span class="comment">// CloseGuard defaults to true and can be quite spammy.  We</span></div><div class="line">        <span class="comment">// disable it here, but selectively enable it later (via</span></div><div class="line">        <span class="comment">// StrictMode) on debug builds, but using DropBox, not logs.</span></div><div class="line">        CloseGuard.setEnabled(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">        Environment.initForCurrentUser();</div><div class="line"></div><div class="line">        <span class="comment">// Set the reporter for event logging in libcore</span></div><div class="line">        EventLogger.setReporter(<span class="keyword">new</span> EventLoggingReporter());</div><div class="line"></div><div class="line">        <span class="comment">// Make sure TrustedCertificateStore looks in the right place for CA certificates</span></div><div class="line">        <span class="keyword">final</span> File configDir = Environment.getUserConfigDirectory(UserHandle.myUserId());</div><div class="line">        TrustedCertificateStore.setDefaultUserDirectory(configDir);</div><div class="line"></div><div class="line">        Process.setArgV0(<span class="string">"&lt;pre-initialized&gt;"</span>);</div><div class="line">        <span class="comment">// 准备阶段</span></div><div class="line">        Looper.prepareMainLooper();</div><div class="line"></div><div class="line">        ActivityThread thread = <span class="keyword">new</span> ActivityThread();</div><div class="line">        thread.attach(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (sMainThreadHandler == <span class="keyword">null</span>) &#123;</div><div class="line">            sMainThreadHandler = thread.getHandler();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</div><div class="line">            Looper.myLooper().setMessageLogging(<span class="keyword">new</span></div><div class="line">                    LogPrinter(Log.DEBUG, <span class="string">"ActivityThread"</span>));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// End of event ActivityThreadMain.</span></div><div class="line">        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">        <span class="comment">//开始循环</span></div><div class="line">        Looper.loop();</div><div class="line"></div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>OK,我们再看看这个 loop()方法做了一些什么操作：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">final</span> Looper me = myLooper();</div><div class="line">        <span class="keyword">if</span> (me == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"No Looper; Looper.prepare() wasn't called on this thread."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">final</span> MessageQueue queue = me.mQueue;</div><div class="line"></div><div class="line">        <span class="comment">// Make sure the identity of this thread is that of the local process,</span></div><div class="line">        <span class="comment">// and keep track of what that identity token actually is.</span></div><div class="line">        Binder.clearCallingIdentity();</div><div class="line">        <span class="keyword">final</span> <span class="keyword">long</span> ident = Binder.clearCallingIdentity();</div><div class="line">        </div><div class="line">        <span class="comment">//死循环开始了！！！</span></div><div class="line">        <span class="keyword">for</span> (;;) &#123;</div><div class="line">            Message msg = queue.next(); <span class="comment">// might block</span></div><div class="line">            <span class="keyword">if</span> (msg == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">// No message indicates that the message queue is quitting.</span></div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// This must be in a local variable, in case a UI event sets the logger</span></div><div class="line">            <span class="keyword">final</span> Printer logging = me.mLogging;</div><div class="line">            <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</div><div class="line">                logging.println(<span class="string">"&gt;&gt;&gt;&gt;&gt; Dispatching to "</span> + msg.target + <span class="string">" "</span> +</div><div class="line">                        msg.callback + <span class="string">": "</span> + msg.what);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> slowDispatchThresholdMs = me.mSlowDispatchThresholdMs;</div><div class="line"></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> traceTag = me.mTraceTag;</div><div class="line">            <span class="keyword">if</span> (traceTag != <span class="number">0</span> &amp;&amp; Trace.isTagEnabled(traceTag)) &#123;</div><div class="line">                Trace.traceBegin(traceTag, msg.target.getTraceName(msg));</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> start = (slowDispatchThresholdMs == <span class="number">0</span>) ? <span class="number">0</span> : SystemClock.uptimeMillis();</div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> end;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="comment">//分派消息</span></div><div class="line">                msg.target.dispatchMessage(msg);</div><div class="line">                end = (slowDispatchThresholdMs == <span class="number">0</span>) ? <span class="number">0</span> : SystemClock.uptimeMillis();</div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                <span class="keyword">if</span> (traceTag != <span class="number">0</span>) &#123;</div><div class="line">                    Trace.traceEnd(traceTag);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (slowDispatchThresholdMs &gt; <span class="number">0</span>) &#123;</div><div class="line">                <span class="keyword">final</span> <span class="keyword">long</span> time = end - start;</div><div class="line">                <span class="keyword">if</span> (time &gt; slowDispatchThresholdMs) &#123;</div><div class="line">                    Slog.w(TAG, <span class="string">"Dispatch took "</span> + time + <span class="string">"ms on "</span></div><div class="line">                            + Thread.currentThread().getName() + <span class="string">", h="</span> +</div><div class="line">                            msg.target + <span class="string">" cb="</span> + msg.callback + <span class="string">" msg="</span> + msg.what);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</div><div class="line">                logging.println(<span class="string">"&lt;&lt;&lt;&lt;&lt; Finished to "</span> + msg.target + <span class="string">" "</span> + msg.callback);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// Make sure that during the course of dispatching the</span></div><div class="line">            <span class="comment">// identity of the thread wasn't corrupted.</span></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> newIdent = Binder.clearCallingIdentity();</div><div class="line">            <span class="keyword">if</span> (ident != newIdent) &#123;</div><div class="line">                Log.wtf(TAG, <span class="string">"Thread identity changed from 0x"</span></div><div class="line">                        + Long.toHexString(ident) + <span class="string">" to 0x"</span></div><div class="line">                        + Long.toHexString(newIdent) + <span class="string">" while dispatching to "</span></div><div class="line">                        + msg.target.getClass().getName() + <span class="string">" "</span></div><div class="line">                        + msg.callback + <span class="string">" what="</span> + msg.what);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            msg.recycleUnchecked();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>好了，我们看到上面一大堆代码，大概整个流程就是<strong>不断地从 queue 取出 Message 对象，如果有这样的 Message 对象存在的话则交给 msg.target 来处理这个 Message</strong>。<br>首先我们要明白一点，Android 主线程在进入消息循环过程前创建一个 Liux 管道（Pipe），这个管道的作用就是在 Android 主线程的消息队列为空的时候进入<strong>空闲等待状态</strong>，这样 CPU 并不会消耗太多资源在当前线程，并且使得当应用程序的消息队列有消息需要处理时唤醒应用程序的主线程。</p>
+<p>然后其实上面代码中的 msg.target.dispatchMessage(msg)，target 就是 Handler 对象，也就是我们 ActivityThread 的 H 对象，H 是 ActivityThread 的内部类，主要源码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">H</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">...</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (DEBUG_MESSAGES) Slog.v(TAG, <span class="string">"&gt;&gt;&gt; handling: "</span> + codeToString(msg.what));</div><div class="line">            <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">                <span class="keyword">case</span> LAUNCH_ACTIVITY: &#123;</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityStart"</span>);</div><div class="line">                    <span class="keyword">final</span> ActivityClientRecord r = (ActivityClientRecord) msg.obj;</div><div class="line"></div><div class="line">                    r.packageInfo = getPackageInfoNoCheck(</div><div class="line">                            r.activityInfo.applicationInfo, r.compatInfo);</div><div class="line">                    handleLaunchActivity(r, <span class="keyword">null</span>, <span class="string">"LAUNCH_ACTIVITY"</span>);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                &#125; <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> RELAUNCH_ACTIVITY: &#123;</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityRestart"</span>);</div><div class="line">                    ActivityClientRecord r = (ActivityClientRecord)msg.obj;</div><div class="line">                    handleRelaunchActivity(r);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                &#125; <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> PAUSE_ACTIVITY: &#123;</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityPause"</span>);</div><div class="line">                    SomeArgs args = (SomeArgs) msg.obj;</div><div class="line">                    handlePauseActivity((IBinder) args.arg1, <span class="keyword">false</span>,</div><div class="line">                            (args.argi1 &amp; USER_LEAVING) != <span class="number">0</span>, args.argi2,</div><div class="line">                            (args.argi1 &amp; DONT_REPORT) != <span class="number">0</span>, args.argi3);</div><div class="line">                    maybeSnapshot();</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                &#125; <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> PAUSE_ACTIVITY_FINISHING: &#123;</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityPause"</span>);</div><div class="line">                    SomeArgs args = (SomeArgs) msg.obj;</div><div class="line">                    handlePauseActivity((IBinder) args.arg1, <span class="keyword">true</span>, (args.argi1 &amp; USER_LEAVING) != <span class="number">0</span>,</div><div class="line">                            args.argi2, (args.argi1 &amp; DONT_REPORT) != <span class="number">0</span>, args.argi3);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                &#125; <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> STOP_ACTIVITY_SHOW: &#123;</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityStop"</span>);</div><div class="line">                    SomeArgs args = (SomeArgs) msg.obj;</div><div class="line">                    handleStopActivity((IBinder) args.arg1, <span class="keyword">true</span>, args.argi2, args.argi3);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                &#125; <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> STOP_ACTIVITY_HIDE: &#123;</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityStop"</span>);</div><div class="line">                    SomeArgs args = (SomeArgs) msg.obj;</div><div class="line">                    handleStopActivity((IBinder) args.arg1, <span class="keyword">false</span>, args.argi2, args.argi3);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                &#125; <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> SHOW_WINDOW:</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityShowWindow"</span>);</div><div class="line">                    handleWindowVisibility((IBinder)msg.obj, <span class="keyword">true</span>);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> HIDE_WINDOW:</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityHideWindow"</span>);</div><div class="line">                    handleWindowVisibility((IBinder)msg.obj, <span class="keyword">false</span>);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> RESUME_ACTIVITY:</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityResume"</span>);</div><div class="line">                    SomeArgs args = (SomeArgs) msg.obj;</div><div class="line">                    handleResumeActivity((IBinder) args.arg1, <span class="keyword">true</span>, args.argi1 != <span class="number">0</span>, <span class="keyword">true</span>,</div><div class="line">                            args.argi3, <span class="string">"RESUME_ACTIVITY"</span>);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> SEND_RESULT:</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityDeliverResult"</span>);</div><div class="line">                    handleSendResult((ResultData)msg.obj);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> DESTROY_ACTIVITY:</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"activityDestroy"</span>);</div><div class="line">                    handleDestroyActivity((IBinder)msg.obj, msg.arg1 != <span class="number">0</span>,</div><div class="line">                            msg.arg2, <span class="keyword">false</span>);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> BIND_APPLICATION:</div><div class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"bindApplication"</span>);</div><div class="line">                    AppBindData data = (AppBindData)msg.obj;</div><div class="line">                    handleBindApplication(data);</div><div class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> EXIT_APPLICATION:</div><div class="line">                    <span class="keyword">if</span> (mInitialApplication != <span class="keyword">null</span>) &#123;</div><div class="line">                        mInitialApplication.onTerminate();</div><div class="line">                    &#125;</div><div class="line">                    Looper.myLooper().quit();</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">            ...</div><div class="line">            &#125;</div><div class="line">            Object obj = msg.obj;</div><div class="line">            <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> SomeArgs) &#123;</div><div class="line">                ((SomeArgs) obj).recycle();</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (DEBUG_MESSAGES) Slog.v(TAG, <span class="string">"&lt;&lt;&lt; done: "</span> + codeToString(msg.what));</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>用过 Handler 的人都知道，我们在 Handler 发送消息后，通过 Looper 取出消息后，会重新交给 Handler 去 handleMessage，我们看上面的 case 条件，创建 activity 消息（LAUNCH_ACTIVITY），销毁activity的消息（DESTROY_ACTIVITY）等操作都在里面进行分发处理，那么当收到信息的时候，主线程就能正常运行，做出反应。</p>
+<p>那么 Handler 在什么时候发出这些消息的呢？？？ 我们又重新看第一段代码（ActivityThread 的 main（）方法），我们可以看到有这样一段代码 <strong>thread.attach(false)</strong>；这个 Thread 是 ApplicationThread 对象， Binder 的服务端，用于接收系统服务 AMS 发送来的事），该 Binder 线程通过 Handler 将 Message 发送给主线程。<br>thread.attach(false)方法代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(<span class="keyword">boolean</span> system)</span> </span>&#123;</div><div class="line">        sCurrentActivityThread = <span class="keyword">this</span>;</div><div class="line">        mSystemThread = system;</div><div class="line">        <span class="keyword">if</span> (!system) &#123;</div><div class="line">            ViewRootImpl.addFirstDrawHandler(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    ensureJitEnabled();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            android.ddm.DdmHandleAppName.setAppName(<span class="string">"&lt;pre-initialized&gt;"</span>,</div><div class="line">                                                    UserHandle.myUserId());</div><div class="line">            RuntimeInit.setApplicationObject(mAppThread.asBinder());</div><div class="line">            <span class="keyword">final</span> IActivityManager mgr = ActivityManager.getService();</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                mgr.attachApplication(mAppThread);<span class="comment">//注释1</span></div><div class="line">            &#125; <span class="keyword">catch</span> (RemoteException ex) &#123;</div><div class="line">                <span class="keyword">throw</span> ex.rethrowFromSystemServer();</div><div class="line">            &#125;</div><div class="line">            <span class="comment">// Watch for getting close to heap limit.</span></div><div class="line">            BinderInternal.addGcWatcher(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    <span class="keyword">if</span> (!mSomeActivitiesChanged) &#123;</div><div class="line">                        <span class="keyword">return</span>;</div><div class="line">                    &#125;</div><div class="line">                    Runtime runtime = Runtime.getRuntime();</div><div class="line">                    <span class="keyword">long</span> dalvikMax = runtime.maxMemory();</div><div class="line">                    <span class="keyword">long</span> dalvikUsed = runtime.totalMemory() - runtime.freeMemory();</div><div class="line">                    <span class="keyword">if</span> (dalvikUsed &gt; ((<span class="number">3</span>*dalvikMax)/<span class="number">4</span>)) &#123;</div><div class="line">                        <span class="keyword">if</span> (DEBUG_MEMORY_TRIM) Slog.d(TAG, <span class="string">"Dalvik max="</span> + (dalvikMax/<span class="number">1024</span>)</div><div class="line">                                + <span class="string">" total="</span> + (runtime.totalMemory()/<span class="number">1024</span>)</div><div class="line">                                + <span class="string">" used="</span> + (dalvikUsed/<span class="number">1024</span>));</div><div class="line">                        mSomeActivitiesChanged = <span class="keyword">false</span>;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            mgr.releaseSomeActivities(mAppThread);</div><div class="line">                        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">                            <span class="keyword">throw</span> e.rethrowFromSystemServer();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// Don't set application object here -- if the system crashes,</span></div><div class="line">            <span class="comment">// we can't display an alert, we just want to die die die.</span></div><div class="line">            android.ddm.DdmHandleAppName.setAppName(<span class="string">"system_process"</span>,</div><div class="line">                    UserHandle.myUserId());</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                mInstrumentation = <span class="keyword">new</span> Instrumentation();</div><div class="line">                ContextImpl context = ContextImpl.createAppContext(</div><div class="line">                        <span class="keyword">this</span>, getSystemContext().mPackageInfo);</div><div class="line">                mInitialApplication = context.mPackageInfo.makeApplication(<span class="keyword">true</span>, <span class="keyword">null</span>);</div><div class="line">                mInitialApplication.onCreate();</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">                        <span class="string">"Unable to instantiate Application():"</span> + e.toString(), e);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div></pre></td></tr></table></figure><br>上面这段代码，注释1中将当前 mAppThread 为对象与 AMS 建立关系，之后 AMS 就可以通过这个代理对象发送消息给主线程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationThread</span> <span class="keyword">extends</span> <span class="title">IApplicationThread</span>.<span class="title">Stub</span> </span>&#123;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DB_INFO_FORMAT = <span class="string">"  %8s %8s %14s %14s  %s"</span>;</div><div class="line">  ...</div><div class="line">      <span class="keyword">private</span> <span class="keyword">int</span> mLastProcessState = -<span class="number">1</span>;</div><div class="line"></div><div class="line">      <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updatePendingConfiguration</span><span class="params">(Configuration config)</span> </span>&#123;</div><div class="line">          <span class="keyword">synchronized</span> (mResourcesManager) &#123;</div><div class="line">              <span class="keyword">if</span> (mPendingConfiguration == <span class="keyword">null</span> ||</div><div class="line">                      mPendingConfiguration.isOtherSeqNewer(config)) &#123;</div><div class="line">                  mPendingConfiguration = config;</div><div class="line">              &#125;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">schedulePauseActivity</span><span class="params">(IBinder token, <span class="keyword">boolean</span> finished,</span></span></div><div class="line"><span class="function"><span class="params">              <span class="keyword">boolean</span> userLeaving, <span class="keyword">int</span> configChanges, <span class="keyword">boolean</span> dontReport)</span> </span>&#123;</div><div class="line">          <span class="keyword">int</span> seq = getLifecycleSeq();</div><div class="line">          <span class="keyword">if</span> (DEBUG_ORDER) Slog.d(TAG, <span class="string">"pauseActivity "</span> + ActivityThread.<span class="keyword">this</span></div><div class="line">                  + <span class="string">" operation received seq: "</span> + seq);</div><div class="line">          sendMessage(</div><div class="line">                  finished ? H.PAUSE_ACTIVITY_FINISHING : H.PAUSE_ACTIVITY,</div><div class="line">                  token,</div><div class="line">                  (userLeaving ? USER_LEAVING : <span class="number">0</span>) | (dontReport ? DONT_REPORT : <span class="number">0</span>),</div><div class="line">                  configChanges,</div><div class="line">                  seq);</div><div class="line">      &#125;</div><div class="line">...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面是 <strong>ApplicationThread</strong> 类源码中的部分代码，聪明的同学已经明了,主线程阻塞之后生命周期等方法是如何启用的.<br>这一个个形似各种声明周期的方法,最终还调用了 <strong>sendMessage</strong> 方法,让我们再来看看 sendMessage 方法的是怎么操作的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="keyword">int</span> what, Object obj)</span> </span>&#123;</div><div class="line">        sendMessage(what, obj, <span class="number">0</span>, <span class="number">0</span>, <span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="keyword">int</span> what, Object obj, <span class="keyword">int</span> arg1)</span> </span>&#123;</div><div class="line">        sendMessage(what, obj, arg1, <span class="number">0</span>, <span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="keyword">int</span> what, Object obj, <span class="keyword">int</span> arg1, <span class="keyword">int</span> arg2)</span> </span>&#123;</div><div class="line">        sendMessage(what, obj, arg1, arg2, <span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="keyword">int</span> what, Object obj, <span class="keyword">int</span> arg1, <span class="keyword">int</span> arg2, <span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (DEBUG_MESSAGES) Slog.v(</div><div class="line">            TAG, <span class="string">"SCHEDULE "</span> + what + <span class="string">" "</span> + mH.codeToString(what)</div><div class="line">            + <span class="string">": "</span> + arg1 + <span class="string">" / "</span> + obj);</div><div class="line">        Message msg = Message.obtain();</div><div class="line">        msg.what = what;</div><div class="line">        msg.obj = obj;</div><div class="line">        msg.arg1 = arg1;</div><div class="line">        msg.arg2 = arg2;</div><div class="line">        <span class="keyword">if</span> (async) &#123;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line">        mH.sendMessage(msg);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="keyword">int</span> what, Object obj, <span class="keyword">int</span> arg1, <span class="keyword">int</span> arg2, <span class="keyword">int</span> seq)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (DEBUG_MESSAGES) Slog.v(</div><div class="line">                TAG, <span class="string">"SCHEDULE "</span> + mH.codeToString(what) + <span class="string">" arg1="</span> + arg1 + <span class="string">" arg2="</span> + arg2 +</div><div class="line">                        <span class="string">"seq= "</span> + seq);</div><div class="line">        Message msg = Message.obtain();</div><div class="line">        msg.what = what;</div><div class="line">        SomeArgs args = SomeArgs.obtain();</div><div class="line">        args.arg1 = obj;</div><div class="line">        args.argi1 = arg1;</div><div class="line">        args.argi2 = arg2;</div><div class="line">        args.argi3 = seq;</div><div class="line">        msg.obj = args;</div><div class="line">        mH.sendMessage(msg);</div><div class="line">    &#125;</div><div class="line"></div></pre></td></tr></table></figure></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>到此想必各位也就明了,主线程确实是阻塞的,像我们平时自己 new Thread 一样，如果不加入 looper 做死循环，当 run() 方法走完的时候，系统就会回收线程所占的资源,所以说主线程阻塞是一个伪命题,只不过是没有弄明白既然阻塞了,为什么还能调用各种声明周期而已.<br>调用生命周期是因为有 Looper ,有 MessageQueue ,还有沟通的桥梁 Handler,通过 IPC 机制调用 Handler 发送各种消息,保存到 MessageQueue 中,然后在主线程中的 Looper 提取了消息,并在主线程中调用 Handler 的方法去处理消息,最终完成各种声明周期.</p>
+<h3 id="题二：volatile-和-synchronized-的区别"><a href="#题二：volatile-和-synchronized-的区别" class="headerlink" title="题二：volatile 和 synchronized 的区别"></a>题二：volatile 和 synchronized 的区别</h3><h4 id="volatile-和-synchronized-的特点"><a href="#volatile-和-synchronized-的特点" class="headerlink" title="volatile 和 synchronized 的特点"></a>volatile 和 synchronized 的特点</h4><p>首先需要理解线程安全的两个方面：<strong>执行控制</strong> 和 <strong>内存可见</strong>。</p>
+<p><strong>执行控制</strong> 的目的是控制代码执行（顺序）及是否可以并发执行。</p>
+<p><strong>内存可见</strong> 控制的是线程执行结果在内存中对其它线程的可见性。根据 Java 内存模型的实现，线程在具体执行时，会先拷贝主存数据到线程本地（CPU 缓存），操作完成后再把结果从线程本地刷到主存。</p>
+<p><strong>synchronized</strong> 关键字解决的是<strong>执行控制</strong>的问题，它会阻止其它线程获取当前对象的监控锁，这样就使得当前对象中被 <strong>synchronized</strong> 关键字保护的代码块无法被其它线程访问，也就无法并发执行。更重要的是，<strong>synchronized</strong> 还会创建一个<strong>内存屏障</strong>，内存屏障指令保证了所有CPU操作结果都会直接刷到主存中，从而保证了操作的<strong>内存可见性</strong>，同时也使得先获得这个锁的线程的所有操作，都 happens-before 于随后获得这个锁的线程的操作。</p>
+<p><strong>volatile</strong> 关键字解决的是<strong>内存可见性</strong>的问题，会使得所有对 <strong>volatile</strong> 变量的读写都会直接刷到主存，即保证了变量的可见性。这样就能<strong>满足一些对变量可见性有要求而对读取顺序没有要求的需求</strong>。</p>
+<p>使用 <strong>volatile</strong> 关键字仅能实现对原始变量(如 boolen、 short 、int 、long 等)操作的原子性，但需要特别注意， <strong>volatile</strong> 不能保证复合操作的原子性，即使只是i++，实际上也是由多个原子操作组成：read i; inc; write i，假如多个线程同时执行i++，<strong>volatile</strong> 只能保证他们操作的i是同一块内存，但依然可能出现写入脏数据的情况。</p>
+<p>在Java 5提供了原子数据类型 atomic wrapper classes，对它们的 increase 之类的操作都是原子操作，不需要使用 sychronized 关键字。</p>
+<p>对于 <strong>volatile</strong> 关键字，当且仅当满足以下所有条件时可使用：</p>
+<ol>
+<li>对变量的写入操作不依赖变量的当前值，或者你能确保只有单个线程更新变量的值。</li>
+<li>该变量没有包含在具有其他变量的不变式中。</li>
+</ol>
+<h4 id="volatile-和-synchronized-的区别"><a href="#volatile-和-synchronized-的区别" class="headerlink" title="volatile 和 synchronized 的区别"></a>volatile 和 synchronized 的区别</h4><ol>
+<li>volatile 本质是在告诉 jvm 当前变量在寄存器（工作内存）中的值是不确定的，需要从主存中读取；  synchronized 则是锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞住。</li>
+<li>volatile 仅能使用在变量级别；synchronized 则可以使用在变量、方法、和类级别的</li>
+<li>volatile 仅能实现变量的修改可见性，不能保证原子性；而 synchronized 则可以保证变量的修改可见性和原子性</li>
+<li>volatile 不会造成线程的阻塞；synchronized 可能会造成线程的阻塞。</li>
+<li>volatile 标记的变量不会被编译器优化；synchronized 标记的变量可以被编译器优化</li>
+</ol>
+<h3 id="题三：静态内部类如何引用外部类变量"><a href="#题三：静态内部类如何引用外部类变量" class="headerlink" title="题三：静态内部类如何引用外部类变量"></a>题三：静态内部类如何引用外部类变量</h3><h4 id="首先，我们要明白静态类和非静态类的区别"><a href="#首先，我们要明白静态类和非静态类的区别" class="headerlink" title="首先，我们要明白静态类和非静态类的区别"></a>首先，我们要明白静态类和非静态类的区别</h4><p>静态类特点：</p>
+<ol>
+<li>全局唯一，任何一次的修改都是全局性的。</li>
+<li>只加载一次，优先于非静态</li>
+<li>使用方式不依赖于实例对象，也就是说可以不依赖外部类直接访问</li>
+<li>生命周期属于类级别，加载在JVM中（也就是所说的内存缓存中，Android程序崩溃后，这些数据将会丢失），直到JVM卸载而结束。</li>
+</ol>
+<p>静态内部类与非静态内部类区别：</p>
+<ol>
+<li>内部静态类不需要有指向外部类的引用。但非静态内部类需要持有对外部类的引用。</li>
+<li>非静态内部类能够访问外部类的静态与非静态成员，静态内部类只能访问外部类的静态成员。</li>
+<li>一个非静态类不能够脱离外部类实体被访问创建，并可以直接访问外部类属性和方法。静态类不依赖外部类可以直接访问。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">  <span class="keyword">import</span> java.io.*;  <span class="class"><span class="keyword">class</span> <span class="title">Test</span>    </span>&#123;   <span class="keyword">private</span> <span class="keyword">int</span> outNum = <span class="number">4</span>;  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String[] args)</span> <span class="keyword">throws</span> java.lang.Exception</span>&#123;       Test test=<span class="keyword">new</span> Test();       test.print(test);&#125;<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(Test test)</span></span>&#123;       StaInnerClass staInnerClass = <span class="keyword">new</span> StaInnerClass(test);       staInnerClass.print();   &#125;   <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">StaInnerClass</span></span>&#123;       Test test;       <span class="function"><span class="keyword">public</span> <span class="title">StaInnerClass</span><span class="params">(Test t)</span></span>&#123;           <span class="keyword">this</span>.test = t;       &#125;       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>&#123;           System.out.println(<span class="string">".............."</span>+test.getOutNum());       &#125;   &#125;   <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOutNum</span><span class="params">()</span></span>&#123;       <span class="keyword">return</span> outNum;   &#125;&#125;</div><div class="line"></div></pre></td></tr></table></figure>
+<p>综上代码，我们可以得出打印出结果：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">..............<span class="number">4</span></div></pre></td></tr></table></figure></p>
+<p>在我们实际 Android 开发中，可能会遇到在 Activity 中使用到静态内部类，上面也提到了<strong>静态内部类的生命周期是伴随 JVM 生命周期的，也就是伴随程序运行的</strong>。当我们在静态内部类中使用强引用，像如上代码强引用外部实例对象时候，如果被引用的实例对象的生命周期短于该静态内部类生命周期就会造成内存溢出也就是 OOM 异常。这个时候我们应该怎么办呢？</p>
+<h4 id="这个时候，我们就要了解-Java-中的几种引用形式了"><a href="#这个时候，我们就要了解-Java-中的几种引用形式了" class="headerlink" title="这个时候，我们就要了解 Java 中的几种引用形式了"></a>这个时候，我们就要了解 Java 中的几种引用形式了</h4><p>Java 中引用形式总共有七种，它们分别是：</p>
+<ul>
+<li>强引用（StrongReference）</li>
+<li>软引用（SoftReference）</li>
+<li>弱引用（WeakReference）</li>
+<li>虚引用（PhantomReference）</li>
+</ul>
+<h5 id="强引用（StrongReference）"><a href="#强引用（StrongReference）" class="headerlink" title="强引用（StrongReference）"></a>强引用（StrongReference）</h5><p> 强引用是使用最普遍的引用。如果一个对象具有强引用，那垃圾回收器绝不会回收它。如下：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Object o=<span class="keyword">new</span> Object();   <span class="comment">//  强引用</span></div></pre></td></tr></table></figure><br>  当内存空间不足，Java 虚拟机宁愿抛出 OutOfMemoryError 错误，使程序异常终止，也不会靠随意回收具有强引用的对象来解决内存不足的问题。如果不使用时，要通过如下方式来弱化引用，如下：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">o=<span class="keyword">null</span>;     <span class="comment">// 帮助垃圾收集器回收此对象</span></div></pre></td></tr></table></figure><br> 显式地设置 o 为 null，或超出对象的生命周期范围，则 gc 认为该对象不存在引用，这时就可以回收这个对象。具体什么时候收集这要取决于 gc 的算法。<br> 举个例子：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</div><div class="line">	Object o=<span class="keyword">new</span> Object();</div><div class="line">	<span class="comment">// 省略其他操作</span></div></pre></td></tr></table></figure><br> 在一个方法的内部有一个强引用，这个引用保存在栈中，而真正的引用内容（Object）保存在堆中。当这个方法运行完成后就会退出方法栈，则引用内容的引用不存在，这个 Object 会被回收。</p>
+<p>但是如果这个 o 是全局的变量时，就需要在不用这个对象时赋值为 null，因为强引用不会被垃圾回收。</p>
+<p>强引用在实际中有非常重要的用处，举个 ArrayList 的实现源代码：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Object[] elementData;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</div><div class="line">        modCount++;</div><div class="line">        <span class="comment">// Let gc do its work</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++)</div><div class="line">            elementData[i] = <span class="keyword">null</span>;</div><div class="line">        size = <span class="number">0</span>;</div></pre></td></tr></table></figure><br>在 ArrayList 类中定义了一个私有的变量 elementData 数组，在调用方法清空数组时可以看到为每个数组内容赋值为 null。不同于 elementData=null，强引用仍然存在，避免在后续调用 add()等方法添加元素时进行重新的内存分配。<strong>使用如 clear()方法中释放内存的方法对数组中存放的引用类型特别适用，这样就可以及时释放内存。</strong></p>
+<h5 id="软引用（SoftReference）"><a href="#软引用（SoftReference）" class="headerlink" title="软引用（SoftReference）"></a>软引用（SoftReference）</h5><p>如果一个对象只具有引软用，那么只要内存够足，垃圾回收器就不会回收它；如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以继续被程序使用。<strong>软引用可用来实现内存敏感的高速缓存。</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String str=<span class="keyword">new</span> String(<span class="string">"abc"</span>);                                     <span class="comment">// 强引用</span></div><div class="line">SoftReference&lt;String&gt; softRef=<span class="keyword">new</span> SoftReference&lt;String&gt;(str);     <span class="comment">// 软引用</span></div></pre></td></tr></table></figure>
+<p>  当内存不足时，等价于：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">If(JVM.内存不足()) &#123;</div><div class="line">   str = <span class="keyword">null</span>;  <span class="comment">// 转换为软引用</span></div><div class="line">   System.gc(); <span class="comment">// 垃圾回收器进行回收</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>软引用在实际中有重要的应用，例如浏览器的后退按钮。按后退时，这个后退时显示的网页内容是重新进行请求还是从缓存中取出呢？这就要看具体的实现策略了。<br>（1）如果一个网页在浏览结束时就进行内容的回收，则按后退查看前面浏览过的页面时，需要重新构建</p>
+<p>（2）如果将浏览过的网页存储到内存中会造成内存的大量浪费，甚至会造成内存溢出</p>
+<p>这时候就可以使用软引用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Browser prev = <span class="keyword">new</span> Browser();               <span class="comment">// 获取页面进行浏览</span></div><div class="line">SoftReference sr = <span class="keyword">new</span> SoftReference(prev); <span class="comment">// 浏览完毕后置为软引用		</span></div><div class="line"><span class="keyword">if</span>(sr.get()!=<span class="keyword">null</span>)&#123; </div><div class="line">	rev = (Browser) sr.get();           <span class="comment">// 还没有被回收器回收，直接获取</span></div><div class="line">&#125;<span class="keyword">else</span>&#123;</div><div class="line">	prev = <span class="keyword">new</span> Browser();               <span class="comment">// 由于内存吃紧，所以对软引用的对象回收了</span></div><div class="line">	sr = <span class="keyword">new</span> SoftReference(prev);       <span class="comment">// 重新构建</span></div><div class="line">&#125;</div><div class="line"></div></pre></td></tr></table></figure>
+<p>这样就很好的解决了实际的问题。<br>  软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。</p>
+<h5 id="弱引用（WeakReference）"><a href="#弱引用（WeakReference）" class="headerlink" title="弱引用（WeakReference）"></a>弱引用（WeakReference）</h5><p>弱引用与软引用的区别在于：只具有弱引用的对象拥有更加短暂的生命周期。在垃圾回收器扫描它所管辖的内存区域过程中，一旦发生有弱引用对象，<strong>无论当前内存是否足够，都将会回收它的内存</strong>。不过，由于垃圾回收器是一个优先级很低的线程，因此不一定会很快发现那些只具有弱引用的对象。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">String str=<span class="keyword">new</span> String(<span class="string">"abc"</span>);    </div><div class="line">WeakReference&lt;String&gt; abcWeakRef = <span class="keyword">new</span> WeakReference&lt;String&gt;(str);</div><div class="line">str=<span class="keyword">null</span>;  </div></pre></td></tr></table></figure><br>当垃圾回收器进行扫描时等价于：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">str=<span class="keyword">null</span>;</div><div class="line">System.gc();</div></pre></td></tr></table></figure><br><strong>如果这个对象是偶尔的使用，并且希望在使用时随时就能获取到，但又不想影响此对象的垃圾收集，那么你应该用 Weak Reference 来记住此对象。   </strong><br>下面的代码会让str再次变为一个强引用：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">String abc = abcWeakRef.get();</div></pre></td></tr></table></figure><br>弱引用可以和一个引用队列（ReferenceQueue）联合使用，如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。</p>
+<p><strong>当你想引用一个对象，但是这个对象有自己的生命周期，你不想介入这个对象的生命周期，这时候你就是用弱引用。</strong><br>这个引用不会在对象的垃圾回收判断中产生任何附加的影响。</p>
+<h5 id="虚引用（PhantomReference）"><a href="#虚引用（PhantomReference）" class="headerlink" title="虚引用（PhantomReference）"></a>虚引用（PhantomReference）</h5><p>   “虚引用”顾名思义，就是形同虚设，与其他几种引用都不同，虚引用并不会决定对象的生命周期。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。</p>
+<pre><code>虚引用主要用来跟踪对象被垃圾回收器回收的活动。虚引用与软引用和弱引用的一个区别在于：虚引用必须和引用队列 （ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之 关联的引用队列中。
+</code></pre><h5 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h5><p>Java4种引用的级别由高到低依次为：</p>
+<p>强引用  &gt;  软引用  &gt;  弱引用  &gt;  虚引用</p>
+<p>当垃圾回收器回收时，某些对象会被回收，某些不会被回收。垃圾回收器会从根对象Object来标记存活的对象，然后将某些不可达的对象和一些引用的对象进行回收，如果对这方面不是很了解，可以参考如下的文章：</p>
+<p>传送门：<a href="http://blog.csdn.net/mazhimazh/article/category/1907599" target="_blank" rel="external">Java内存管理</a>  </p>
+<p>我们也可以通过表格来说明一下，如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">引用类型</th>
+<th style="text-align:left">被垃圾回收时间</th>
+<th style="text-align:left">用途</th>
+<th style="text-align:left">生存时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">强引用</td>
+<td style="text-align:left">从来不会</td>
+<td style="text-align:left">对象的一般状态</td>
+<td style="text-align:left">JVM停止运行时终止</td>
+</tr>
+<tr>
+<td style="text-align:left">软引用</td>
+<td style="text-align:left">在内存不足时</td>
+<td style="text-align:left">对象缓存（内存缓存）</td>
+<td style="text-align:left">内存不足时终止</td>
+</tr>
+<tr>
+<td style="text-align:left">弱引用</td>
+<td style="text-align:left">垃圾回收时</td>
+<td style="text-align:left">对象缓存（内存缓存）</td>
+<td style="text-align:left">GC运行后终止</td>
+</tr>
+<tr>
+<td style="text-align:left">虚引用</td>
+<td style="text-align:left">Unknown</td>
+<td style="text-align:left">Unknown</td>
+<td style="text-align:left">Unknown</td>
+</tr>
+</tbody>
+</table>
+<h4 id="在-Android-实际开发中实例"><a href="#在-Android-实际开发中实例" class="headerlink" title="在 Android 实际开发中实例"></a>在 Android 实际开发中实例</h4><p>在 Activity 中声明 Handler 类时，AndroidStudio 会提示警告：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">This Handler <span class="class"><span class="keyword">class</span> <span class="title">should</span> <span class="title">be</span> <span class="title">static</span> <span class="title">or</span> <span class="title">leaks</span> <span class="title">might</span> <span class="title">occur</span></span></div></pre></td></tr></table></figure><br>例如这样的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// This Handler class should be static or leaks might occur</span></div><div class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;  &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>因为如果 Handler 使用 UI 线程来做消息序列的处理，那么可能会导致 Activity 类无法被回收，继而引发内存泄漏。</p>
+<p>因此按照警告中的提示，Handler 应声明为静态内部类:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;  &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br>声明为静态类以后，Handler 就没有了 Activity 的引用，无法直接引用其变量或方法了，因此我们在这里使用弱引用 WeakReference 来解决这个问题：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line"></div><div class="line">    WeakReference&lt;MainActivity&gt; activity;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DownloadHandler</span><span class="params">(MainActivity mainActivity)</span> </span>&#123;</div><div class="line">        activity = <span class="keyword">new</span> WeakReference&lt;MainActivity&gt;(mainActivity);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br>WeakReference 可以尽早地被 GC 回收掉，因此可以防止内存泄漏。由于这里的 activity 变量实际不是 MainActivity 类型的，因此在 handleMessage 中还要多一步获取与判断：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (activity.get() != <span class="keyword">null</span>) &#123;</div><div class="line">            activity.get().someMethod();</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br>当然每次这样调用比较麻烦，可以将WeakReference声明初始化在MainActivity中，在Handler初始化时直接传入：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</div><div class="line"></div><div class="line">    WeakReference&lt;MainActivity&gt; activity;</div><div class="line">    MyHandler mHandler;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        activity = <span class="keyword">new</span> WeakReference&lt;MainActivity&gt;(mainActivity);</div><div class="line">        mHandler = <span class="keyword">new</span> MyHandler(activity);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> MainActivity activity;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyHandler</span><span class="params">(WeakReference&lt;MainActivity&gt; ref)</span> </span>&#123;</div><div class="line">            activity = ref.get();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span>(activity != <span class="keyword">null</span>) &#123;</div><div class="line">                activity.someMethod();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" style="margin:20px auto" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="AnthonyCoder WeChat Pay"/>
+        <p>微信打赏</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="AnthonyCoder Alipay"/>
+        <p>支付宝打赏</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/面试/" rel="tag"># 面试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/21/Android进阶-View体系与自定义View/" rel="next" title="Android进阶-View体系与自定义View">
+                <i class="fa fa-chevron-left"></i> Android进阶-View体系与自定义View
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMjM2My84OTI0"></div>
+    
+  </div>
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="AnthonyCoder" />
+          <p class="site-author-name" itemprop="name">AnthonyCoder</p>
+           
+              <p class="site-description motion-element" itemprop="description">来自Anthony的博客</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AnthonyCoder" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1781832267/" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/wang-zhu-67-70" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/7368137/hacker-maple" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wanandroid.com/" title="玩Android" target="_blank">玩Android</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.jianshu.com/u/d1fc3320f87a" title="码农大表哥" target="_blank">码农大表哥</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://chaodongyang.com" title="Android开发社区" target="_blank">Android开发社区</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题一：为什么在主线程的-Looper-looper-死循环不会卡死？"><span class="nav-number">1.</span> <span class="nav-text">题一：为什么在主线程的 Looper.looper() 死循环不会卡死？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#从-ActivityThread-源码开始分析"><span class="nav-number">1.1.</span> <span class="nav-text">从 ActivityThread 源码开始分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">1.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#题二：volatile-和-synchronized-的区别"><span class="nav-number">2.</span> <span class="nav-text">题二：volatile 和 synchronized 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile-和-synchronized-的特点"><span class="nav-number">2.1.</span> <span class="nav-text">volatile 和 synchronized 的特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile-和-synchronized-的区别"><span class="nav-number">2.2.</span> <span class="nav-text">volatile 和 synchronized 的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#题三：静态内部类如何引用外部类变量"><span class="nav-number">3.</span> <span class="nav-text">题三：静态内部类如何引用外部类变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#首先，我们要明白静态类和非静态类的区别"><span class="nav-number">3.1.</span> <span class="nav-text">首先，我们要明白静态类和非静态类的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#这个时候，我们就要了解-Java-中的几种引用形式了"><span class="nav-number">3.2.</span> <span class="nav-text">这个时候，我们就要了解 Java 中的几种引用形式了</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#强引用（StrongReference）"><span class="nav-number">3.2.1.</span> <span class="nav-text">强引用（StrongReference）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#软引用（SoftReference）"><span class="nav-number">3.2.2.</span> <span class="nav-text">软引用（SoftReference）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#弱引用（WeakReference）"><span class="nav-number">3.2.3.</span> <span class="nav-text">弱引用（WeakReference）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚引用（PhantomReference）"><span class="nav-number">3.2.4.</span> <span class="nav-text">虚引用（PhantomReference）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结-1"><span class="nav-number">3.2.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在-Android-实际开发中实例"><span class="nav-number">3.3.</span> <span class="nav-text">在 Android 实际开发中实例</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AnthonyCoder</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    主题 &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Pisces
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+   
+
+
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("6opw9PnodNJqySy3DI0FG3fC-gzGzoHsz", "HKkHlc1c2tx28wXsAu4BEPqT");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
