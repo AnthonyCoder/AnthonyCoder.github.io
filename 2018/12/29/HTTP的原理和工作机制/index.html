@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="笔记," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="含义（HTTP 是什么？）HTTP 全称是 HyperText Transfer Protocol（超文本传输协议），属于一种应用层的协议。 工作方式通常我们进行一个网页的 Http 请求时，整体的流程大致如下图： 示例：http://github.com/users?name=AnthonyCoder其中协议类型 : http服务器地址 : github.com路径 : users?name=A">
+<meta name="keywords" content="笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP 的原理和工作机制">
+<meta property="og:url" content="http://androidcoder.wang/2018/12/29/HTTP的原理和工作机制/index.html">
+<meta property="og:site_name" content="Anthony的个人博客">
+<meta property="og:description" content="含义（HTTP 是什么？）HTTP 全称是 HyperText Transfer Protocol（超文本传输协议），属于一种应用层的协议。 工作方式通常我们进行一个网页的 Http 请求时，整体的流程大致如下图： 示例：http://github.com/users?name=AnthonyCoder其中协议类型 : http服务器地址 : github.com路径 : users?name=A">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://pji3v0n9v.bkt.clouddn.com/18-12-29/87251191.jpg">
+<meta property="og:image" content="http://pji3v0n9v.bkt.clouddn.com/18-12-29/54420743.jpg">
+<meta property="og:image" content="http://pji3v0n9v.bkt.clouddn.com/18-12-29/68250914.jpg">
+<meta property="og:updated_time" content="2018-12-29T08:10:22.448Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP 的原理和工作机制">
+<meta name="twitter:description" content="含义（HTTP 是什么？）HTTP 全称是 HyperText Transfer Protocol（超文本传输协议），属于一种应用层的协议。 工作方式通常我们进行一个网页的 Http 请求时，整体的流程大致如下图： 示例：http://github.com/users?name=AnthonyCoder其中协议类型 : http服务器地址 : github.com路径 : users?name=A">
+<meta name="twitter:image" content="http://pji3v0n9v.bkt.clouddn.com/18-12-29/87251191.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://androidcoder.wang/2018/12/29/HTTP的原理和工作机制/"/>
+
+
+
+
+
+  <title>HTTP 的原理和工作机制 | Anthony的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Anthony的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">世界太嘈杂，只想敲代码~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-welfare">
+          <a href="/welfare/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-diamond"></i> <br />
+            
+            福利
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://androidcoder.wang/2018/12/29/HTTP的原理和工作机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AnthonyCoder">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anthony的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP 的原理和工作机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-29T10:37:14+08:00">
+                2018-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android-高级进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Android 高级进阶</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/12/29/HTTP的原理和工作机制/" class="leancloud_visitors" data-flag-title="HTTP 的原理和工作机制">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="含义（HTTP-是什么？）"><a href="#含义（HTTP-是什么？）" class="headerlink" title="含义（HTTP 是什么？）"></a>含义（HTTP 是什么？）</h3><p>HTTP 全称是 HyperText Transfer Protocol（超文本传输协议），属于一种应用层的协议。</p>
+<h3 id="工作方式"><a href="#工作方式" class="headerlink" title="工作方式"></a>工作方式</h3><p>通常我们进行一个网页的 Http 请求时，整体的流程大致如下图：<br><img src="http://pji3v0n9v.bkt.clouddn.com/18-12-29/87251191.jpg" alt=""></p>
+<p>示例：<a href="http://github.com/users?name=AnthonyCoder" target="_blank" rel="external">http://github.com/users?name=AnthonyCoder</a><br>其中<br>协议类型 : http<br>服务器地址 : github.com<br>路径 : users?name=AnthonyCoder</p>
+<p>Http 请求报文格式大致如下：<br><img src="http://pji3v0n9v.bkt.clouddn.com/18-12-29/54420743.jpg" alt=""><br><strong>注意：GET 请求是不会有 Body 的，GET 请求的参数是拼接在路径里面的</strong></p>
+<p>Http 相应报文格式大致如下：<br><img src="http://pji3v0n9v.bkt.clouddn.com/18-12-29/68250914.jpg" alt=""></p>
+<h3 id="Request-Method"><a href="#Request-Method" class="headerlink" title="Request Method"></a>Request Method</h3><h4 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h4><p>获取资源；无 Body 内容。</p>
+<h4 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h4><p>增加、修改资源；有 Body 内容。无幂等性（增加资源多次执行结果都会改变）</p>
+<h4 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h4><p>只用于修改资源；有 Body 内容。有幂等性（做一次和做多次同样的修改都一样）</p>
+<h4 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h4><p>删除资源；无 Body 内容。有幂等性</p>
+<h4 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h4><p>与 GET 类似，区别在于 使用 HEAD 方式请求服务器相应不会返回 Body，常用于文件下载前，确定文件的大小、是否支持断点续传、是否支持多线程下载。</p>
+<h3 id="Response-Status-Code"><a href="#Response-Status-Code" class="headerlink" title="Response Status Code"></a>Response Status Code</h3><p>作用：对结果进行类型化的描述（如「获取成功」「内容未找到」）<br>通常情况下，会有如下状态码：</p>
+<h4 id="1xx-临时性消息"><a href="#1xx-临时性消息" class="headerlink" title="1xx: 临时性消息"></a>1xx: 临时性消息</h4><h4 id="2xx：成功"><a href="#2xx：成功" class="headerlink" title="2xx：成功"></a>2xx：成功</h4><h4 id="3xx：重定向"><a href="#3xx：重定向" class="headerlink" title="3xx：重定向"></a>3xx：重定向</h4><p>如很多我们使用 http 请求某一网址，浏览器会自动把我们重定向到 https 的网址下</p>
+<h4 id="4xx：客户端错误"><a href="#4xx：客户端错误" class="headerlink" title="4xx：客户端错误"></a>4xx：客户端错误</h4><h4 id="5xx：服务器错误"><a href="#5xx：服务器错误" class="headerlink" title="5xx：服务器错误"></a>5xx：服务器错误</h4><h3 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h3><p>作用：HTTP 消息的元数据（MetaData）<br>Host: 服务器主机地址<br>Content-Type/Content-Length : Body的类型和长度</p>
+<h4 id="Content-Type：内容类型"><a href="#Content-Type：内容类型" class="headerlink" title="Content-Type：内容类型"></a>Content-Type：内容类型</h4><h5 id="text-html"><a href="#text-html" class="headerlink" title="text/html"></a>text/html</h5><p>一般为浏览器加载普通网页，响应类型为html文本</p>
+<h5 id="application-x-www-from-urlencoded"><a href="#application-x-www-from-urlencoded" class="headerlink" title="application/x-www-from-urlencoded"></a>application/x-www-from-urlencoded</h5><p>普通表单，encoded URL 格式，用于文本传输</p>
+<h5 id="multipart-from-data"><a href="#multipart-from-data" class="headerlink" title="multipart/from-data"></a>multipart/from-data</h5><p>多部分形式上传，通常用于传输二进制数据，例如上传文件等。</p>
+<h5 id="application-json"><a href="#application-json" class="headerlink" title="application/json"></a>application/json</h5><p>json 形式，用于 Web/Api 的响应，或者 Post、Put 的请求</p>
+<h5 id="image-jpeg-application-zip…"><a href="#image-jpeg-application-zip…" class="headerlink" title="image/jpeg/application/zip…"></a>image/jpeg/application/zip…</h5><p>单文件，用于 Web/Api 的响应，或者 Post、Put 的请求</p>
+<h4 id="Content-Length：内容长度（字节）"><a href="#Content-Length：内容长度（字节）" class="headerlink" title="Content-Length：内容长度（字节）"></a>Content-Length：内容长度（字节）</h4><h4 id="Location"><a href="#Location" class="headerlink" title="Location"></a>Location</h4><p>重定向的目标 URL</p>
+<h4 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User-Agent"></a>User-Agent</h4><p>用户代理，一般用于客户端标识</p>
+<h4 id="Range-Accept-Range"><a href="#Range-Accept-Range" class="headerlink" title="Range/Accept-Range"></a>Range/Accept-Range</h4><p>指定 Body 的范围，多用于断点续传或者分段加载</p>
+<h4 id="Cookie-Set-Cookie"><a href="#Cookie-Set-Cookie" class="headerlink" title="Cookie/Set-Cookie"></a>Cookie/Set-Cookie</h4><p>发送 Cookie /设置 Cookie</p>
+<h4 id="Authorization"><a href="#Authorization" class="headerlink" title="Authorization"></a>Authorization</h4><p>授权信息</p>
+<h4 id="部分其他类型"><a href="#部分其他类型" class="headerlink" title="部分其他类型"></a>部分其他类型</h4><h5 id="Accept"><a href="#Accept" class="headerlink" title="Accept"></a>Accept</h5><p>客户端能接收的类型</p>
+<h5 id="Accept-Charset"><a href="#Accept-Charset" class="headerlink" title="Accept-Charset"></a>Accept-Charset</h5><p>客户端能接收的字符集。如 utf-8</p>
+<h5 id="Accept-Encoding"><a href="#Accept-Encoding" class="headerlink" title="Accept-Encoding"></a>Accept-Encoding</h5><p>客户端能接收的压缩编码类型，如 gzip</p>
+<h5 id="Content-Encoding"><a href="#Content-Encoding" class="headerlink" title="Content-Encoding"></a>Content-Encoding</h5><p>压缩类型，如 gzip</p>
+<h3 id="Cache"><a href="#Cache" class="headerlink" title="Cache"></a>Cache</h3><h4 id="Cache-和-Buffer的区别"><a href="#Cache-和-Buffer的区别" class="headerlink" title="Cache 和 Buffer的区别"></a>Cache 和 Buffer的区别</h4><p>Cache 是缓存，一般是用了后未来可能还会用到，于是就存下来下次直接使用，常用于图片缓存。<br>Buffer 是缓冲，一般针对工作流，还未获取到数据但是即将要用到数据，提前请求下来，如视频缓冲。</p>
+<h4 id="Cache-Control"><a href="#Cache-Control" class="headerlink" title="Cache-Control:"></a>Cache-Control:</h4><h5 id="no-cache"><a href="#no-cache" class="headerlink" title="no-cache"></a>no-cache</h5><p>服务器会告诉客户端，这个数据是可以被缓存的，但是在访问之前，先得询问服务器这个数据是否失效。-&gt; 请求这个网址，但是请求前得先询问是否页面失效。</p>
+<h5 id="no-store"><a href="#no-store" class="headerlink" title="no-store"></a>no-store</h5><p>不允许缓存 -&gt; 请求这个网址，网页每次都会从服务器获取然后显示</p>
+<h5 id="max-age"><a href="#max-age" class="headerlink" title="max-age"></a>max-age</h5><p>在失效日期之前，可以直接使用已请求的资源或者说内容。 -&gt; 请求这个网址，在失效日期前，网页可以直接使用缓存数据，失效后，需要重新请求从服务器获取资源。</p>
+<h4 id="Last-Modified"><a href="#Last-Modified" class="headerlink" title="Last-Modified"></a>Last-Modified</h4><h4 id="Etag"><a href="#Etag" class="headerlink" title="Etag"></a>Etag</h4><h4 id="Cache-Control-private-public"><a href="#Cache-Control-private-public" class="headerlink" title="Cache-Control: private/public"></a>Cache-Control: private/public</h4><h3 id="REST"><a href="#REST" class="headerlink" title="REST"></a>REST</h3><p>含义：一种 Http 的架构风格</p>
+<h4 id="Server-Client-architecture"><a href="#Server-Client-architecture" class="headerlink" title="Server-Client architecture"></a>Server-Client architecture</h4><p>也就是我们常说的 CS 架构</p>
+<h4 id="Statelessness"><a href="#Statelessness" class="headerlink" title="Statelessness"></a>Statelessness</h4><p>无状态</p>
+<h4 id="Cacheability"><a href="#Cacheability" class="headerlink" title="Cacheability"></a>Cacheability</h4><p>可缓存</p>
+<h4 id="Layered-system"><a href="#Layered-system" class="headerlink" title="Layered system"></a>Layered system</h4><h4 id="Code-on-demand"><a href="#Code-on-demand" class="headerlink" title="Code on demand"></a>Code on demand</h4><h4 id="Uniform-interface"><a href="#Uniform-interface" class="headerlink" title="Uniform interface"></a>Uniform interface</h4><h3 id="RESTful-HTTP"><a href="#RESTful-HTTP" class="headerlink" title="RESTful HTTP"></a>RESTful HTTP</h3><p>正确使用 HTTP ,规范运用各种接口的 HTTP 请求方式。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" style="margin:20px auto" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="AnthonyCoder WeChat Pay"/>
+        <p>微信打赏</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="AnthonyCoder Alipay"/>
+        <p>支付宝打赏</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/笔记/" rel="tag"># 笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/31/Android进阶-属性动画Property-Animation（上手篇）/" rel="next" title="属性动画 Property Animation（上手篇）">
+                <i class="fa fa-chevron-left"></i> 属性动画 Property Animation（上手篇）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMjM2My84OTI0"></div>
+    
+  </div>
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="AnthonyCoder" />
+          <p class="site-author-name" itemprop="name">AnthonyCoder</p>
+           
+              <p class="site-description motion-element" itemprop="description">来自Anthony的博客</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AnthonyCoder" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1781832267/" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/wang-zhu-67-70" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      知乎
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://stackoverflow.com/users/7368137/hacker-maple" target="_blank" title="StackOverflow">
+                  
+                    <i class="fa fa-fw fa-stack-overflow"></i>
+                  
+                    
+                      StackOverflow
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wanandroid.com/" title="玩Android" target="_blank">玩Android</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.jianshu.com/u/d1fc3320f87a" title="码农大表哥" target="_blank">码农大表哥</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://chaodongyang.com" title="Android开发社区" target="_blank">Android开发社区</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#含义（HTTP-是什么？）"><span class="nav-number">1.</span> <span class="nav-text">含义（HTTP 是什么？）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作方式"><span class="nav-number">2.</span> <span class="nav-text">工作方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Request-Method"><span class="nav-number">3.</span> <span class="nav-text">Request Method</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GET"><span class="nav-number">3.1.</span> <span class="nav-text">GET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#POST"><span class="nav-number">3.2.</span> <span class="nav-text">POST</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PUT"><span class="nav-number">3.3.</span> <span class="nav-text">PUT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DELETE"><span class="nav-number">3.4.</span> <span class="nav-text">DELETE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HEAD"><span class="nav-number">3.5.</span> <span class="nav-text">HEAD</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Response-Status-Code"><span class="nav-number">4.</span> <span class="nav-text">Response Status Code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1xx-临时性消息"><span class="nav-number">4.1.</span> <span class="nav-text">1xx: 临时性消息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2xx：成功"><span class="nav-number">4.2.</span> <span class="nav-text">2xx：成功</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3xx：重定向"><span class="nav-number">4.3.</span> <span class="nav-text">3xx：重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4xx：客户端错误"><span class="nav-number">4.4.</span> <span class="nav-text">4xx：客户端错误</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5xx：服务器错误"><span class="nav-number">4.5.</span> <span class="nav-text">5xx：服务器错误</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Header"><span class="nav-number">5.</span> <span class="nav-text">Header</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Content-Type：内容类型"><span class="nav-number">5.1.</span> <span class="nav-text">Content-Type：内容类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#text-html"><span class="nav-number">5.1.1.</span> <span class="nav-text">text/html</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#application-x-www-from-urlencoded"><span class="nav-number">5.1.2.</span> <span class="nav-text">application/x-www-from-urlencoded</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#multipart-from-data"><span class="nav-number">5.1.3.</span> <span class="nav-text">multipart/from-data</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#application-json"><span class="nav-number">5.1.4.</span> <span class="nav-text">application/json</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#image-jpeg-application-zip…"><span class="nav-number">5.1.5.</span> <span class="nav-text">image/jpeg/application/zip…</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Content-Length：内容长度（字节）"><span class="nav-number">5.2.</span> <span class="nav-text">Content-Length：内容长度（字节）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Location"><span class="nav-number">5.3.</span> <span class="nav-text">Location</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#User-Agent"><span class="nav-number">5.4.</span> <span class="nav-text">User-Agent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Range-Accept-Range"><span class="nav-number">5.5.</span> <span class="nav-text">Range/Accept-Range</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie-Set-Cookie"><span class="nav-number">5.6.</span> <span class="nav-text">Cookie/Set-Cookie</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Authorization"><span class="nav-number">5.7.</span> <span class="nav-text">Authorization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部分其他类型"><span class="nav-number">5.8.</span> <span class="nav-text">部分其他类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Accept"><span class="nav-number">5.8.1.</span> <span class="nav-text">Accept</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Accept-Charset"><span class="nav-number">5.8.2.</span> <span class="nav-text">Accept-Charset</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Accept-Encoding"><span class="nav-number">5.8.3.</span> <span class="nav-text">Accept-Encoding</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Content-Encoding"><span class="nav-number">5.8.4.</span> <span class="nav-text">Content-Encoding</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache"><span class="nav-number">6.</span> <span class="nav-text">Cache</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cache-和-Buffer的区别"><span class="nav-number">6.1.</span> <span class="nav-text">Cache 和 Buffer的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cache-Control"><span class="nav-number">6.2.</span> <span class="nav-text">Cache-Control:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#no-cache"><span class="nav-number">6.2.1.</span> <span class="nav-text">no-cache</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#no-store"><span class="nav-number">6.2.2.</span> <span class="nav-text">no-store</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#max-age"><span class="nav-number">6.2.3.</span> <span class="nav-text">max-age</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Last-Modified"><span class="nav-number">6.3.</span> <span class="nav-text">Last-Modified</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Etag"><span class="nav-number">6.4.</span> <span class="nav-text">Etag</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cache-Control-private-public"><span class="nav-number">6.5.</span> <span class="nav-text">Cache-Control: private/public</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#REST"><span class="nav-number">7.</span> <span class="nav-text">REST</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Server-Client-architecture"><span class="nav-number">7.1.</span> <span class="nav-text">Server-Client architecture</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Statelessness"><span class="nav-number">7.2.</span> <span class="nav-text">Statelessness</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cacheability"><span class="nav-number">7.3.</span> <span class="nav-text">Cacheability</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Layered-system"><span class="nav-number">7.4.</span> <span class="nav-text">Layered system</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Code-on-demand"><span class="nav-number">7.5.</span> <span class="nav-text">Code on demand</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Uniform-interface"><span class="nav-number">7.6.</span> <span class="nav-text">Uniform interface</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTful-HTTP"><span class="nav-number">8.</span> <span class="nav-text">RESTful HTTP</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AnthonyCoder</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    主题 &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Pisces
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+   
+
+
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("6opw9PnodNJqySy3DI0FG3fC-gzGzoHsz", "HKkHlc1c2tx28wXsAu4BEPqT");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
