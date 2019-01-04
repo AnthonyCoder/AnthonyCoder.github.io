@@ -109,7 +109,7 @@
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/005OT2kSly1fyse11ch69j316u0kidhw.jpg">
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/005OT2kSly1fyseaztnfdj316g0o6acl.jpg">
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/005OT2kSly1fys8jalfmnj31nq0g8jwr.jpg">
-<meta property="og:updated_time" content="2019-01-03T03:03:57.941Z">
+<meta property="og:updated_time" content="2019-01-04T03:22:56.965Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="编码、加密、Hash">
 <meta name="twitter:description" content="密码学起源：古代战争 - 古典密码学移位式加密：密码棒加密算法：缠绕木棒后书写密钥：木棒的尺寸规格 替换式加密加密算法：替换文字密钥：码表 现代密码学可以用于文字内容，还可以用于各种二进制数据。 对称加密原理: 使用密钥和加密算法对数据进行转换，把原数据转换成无意义的数据即为密文；然后再使用密钥和解密算法对密文进行逆向转换，即可拿回原数据。经典算法：DES，AES 非对称加密原理： 使用公钥对数据">
@@ -411,7 +411,7 @@
 <h1 id="Base64"><a href="#Base64" class="headerlink" title="Base64"></a>Base64</h1><p>含义：将二进制数据转换成由 64 个字符组成的字符串的编码方式。<br><a href="https://zh.wikipedia.org/wiki/Base64" target="_blank" rel="external">点我查看维基百科对 Base64 的解释</a></p>
 <h2 id="什么是二进制数据？"><a href="#什么是二进制数据？" class="headerlink" title="什么是二进制数据？"></a>什么是二进制数据？</h2><p>狭义：非文本数据即二进制数据<br>广义：所有的计算机数据都是二进制数据</p>
 <h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>让原数据具有字符串所具有的特性（一般都是把非字符串的数据转换成字符串数据，便于文本传输），比如说可以放在 Url 中传输，可以被保存到文本文件中，可以通过普通聊天工具中进行文本传输。</p>
-<h2 id="「Base64」加密传输图片，可以更加安全和高效？"><a href="#「Base64」加密传输图片，可以更加安全和高效？" class="headerlink" title="「Base64」加密传输图片，可以更加安全和高效？"></a>「Base64」加密传输图片，可以更加安全和高效？</h2><p>首先，Base64 是一种数据的编码方式，不是一种加密方式，它完全可以通过反编码得到原数据，所以它不是安全的，要保证安全只有通过「数据加密」。<br>其次，Base64 会使得原数据变得更加庞大（编码后的数据比原始数据略长，为原来数据长度的 {\displaystyle {\frac {4}{3}}} {\frac {4}{3}}倍）<br><img src="https://ws1.sinaimg.cn/large/005OT2kSly1fys8jalfmnj31nq0g8jwr.jpg" alt=""></p>
+<h2 id="「Base64」加密传输图片，可以更加安全和高效？"><a href="#「Base64」加密传输图片，可以更加安全和高效？" class="headerlink" title="「Base64」加密传输图片，可以更加安全和高效？"></a>「Base64」加密传输图片，可以更加安全和高效？</h2><p>首先，Base64 是一种数据的编码方式，不是一种加密方式，它完全可以通过反编码得到原数据，所以它不是安全的，要保证安全只有通过「数据加密」。<br>其次，Base64 会使得原数据变得更加庞大（编码后的数据比原始数据略长，为原来数据长度的三分之四倍。<br><img src="https://ws1.sinaimg.cn/large/005OT2kSly1fys8jalfmnj31nq0g8jwr.jpg" alt=""></p>
 <h2 id="变种：Base58"><a href="#变种：Base58" class="headerlink" title="变种：Base58"></a>变种：Base58</h2><p>含义：Base58是用于Bitcoin中使用的一种独特的编码方式，主要用于产生Bitcoin的钱包地址。相比Base64，Base58不使用数字”0”，字母大写”O”，字母大写”I”，和字母小写”l”，以及”+”和”/“符号。<br>设计Base58主要的目的是：<br>避免混淆。在某些字体下，数字0和字母大写O，以及字母大写I和字母小写l会非常相似。<br>不使用”+”和”/“的原因是非字母或数字的字符串作为帐号较难被接受。<br>没有标点符号，通常不会被从中间分行。<br>大部分的软件支持双击选择整个字符串。<br><a href="https://zh.wikipedia.org/wiki/Base58" target="_blank" rel="external">点我查看维基百科对 Base58 的解释</a></p>
 <h1 id="URL-encoding"><a href="#URL-encoding" class="headerlink" title="URL encoding"></a>URL encoding</h1><p>将 URL 中的保留字符使用百分号“%”进行编码<br>目的： 消除歧义，避免解析错误</p>
 </li>
